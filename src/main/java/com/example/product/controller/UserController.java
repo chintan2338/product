@@ -9,10 +9,14 @@ import com.example.product.repository.StudentRepository;
 import com.example.product.service.EmployeeService;
 import com.example.product.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -31,6 +35,9 @@ public class UserController {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @GetMapping("/oneToMany")
     public List<User> getAllUsers() {
         return userService.getAllUsersWithAddresses();
@@ -48,10 +55,17 @@ public class UserController {
     }
 
     @GetMapping("api")
-    public List<Course> getAlslStudents() {
+    public ResponseEntity<List<Course>> getAllStudentWithRest() {
 //        API Call karis ManyToMany vadi
 //        API ma thi response body lai ne return karais.
-        return null;
+
+        ResponseEntity<List<Course>> response = restTemplate.exchange(
+                "http://localhost:8080/api/users/ManyToMany",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Course>>() {}
+        );
+        return response;
 //        return courseRepository.findAll();
     }
 
